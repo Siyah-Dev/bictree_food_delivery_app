@@ -11,15 +11,10 @@ class AppTheme {
         brightness: Brightness.light,
       ),
       scaffoldBackgroundColor: const Color(0xFFFFFBF8),
-      appBarTheme: const AppBarTheme(
-        centerTitle: false,
-        elevation: 0,
-      ),
+      appBarTheme: const AppBarTheme(centerTitle: false, elevation: 0),
       inputDecorationTheme: InputDecorationTheme(
         filled: true,
-        border: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(14),
-        ),
+        border: OutlineInputBorder(borderRadius: BorderRadius.circular(14)),
       ),
       elevatedButtonTheme: ElevatedButtonThemeData(
         style: ElevatedButton.styleFrom(

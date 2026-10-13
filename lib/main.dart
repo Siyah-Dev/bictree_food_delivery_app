@@ -9,10 +9,5 @@ Future<void> main() async {
 
   await Hive.initFlutter();
 
-
-  runApp(
-    const ProviderScope(
-      child: FoodDeliveryApp(),
-    ),
-  );
+  runApp(const ProviderScope(child: FoodDeliveryApp()));
 }
