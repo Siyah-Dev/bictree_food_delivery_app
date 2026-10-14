@@ -27,7 +27,7 @@ class FoodSearchHeader extends StatelessWidget {
           child: GestureDetector(
             onTap: onSearchTap,
             child: Container(
-              height: 28,
+              height: 32,
               padding: const EdgeInsets.only(left: 12, right: 5),
               decoration: BoxDecoration(
                 color: AppColors.white,
@@ -44,8 +44,8 @@ class FoodSearchHeader extends StatelessWidget {
                   GestureDetector(
                     onTap: onFilterTap,
                     child: Container(
-                      width: 21,
-                      height: 21,
+                      width: 22,
+                      height: 22,
                       decoration: const BoxDecoration(
                         color: AppColors.primary,
                         shape: BoxShape.circle,
@@ -88,8 +88,8 @@ class _HeaderAction extends StatelessWidget {
         onTap: onTap,
         borderRadius: BorderRadius.circular(11),
         child: SizedBox(
-          width: 28,
-          height: 28,
+          width: 30,
+          height: 30,
           child: Padding(
             padding: const EdgeInsets.all(6),
             child: SvgPicture.asset(
