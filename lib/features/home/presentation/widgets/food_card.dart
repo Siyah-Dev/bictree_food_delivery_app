@@ -37,7 +37,7 @@ class FoodCard extends StatelessWidget {
                 imageUrl: food.image,
                 fit: BoxFit.cover,
                 placeholder: (_, _) => const ColoredBox(
-                  color: Color(0xFFF1E5D5),
+                  color: AppColors.imagePlaceholder,
                   child: Center(
                     child: SizedBox(
                       width: 18,
@@ -50,7 +50,7 @@ class FoodCard extends StatelessWidget {
                   ),
                 ),
                 errorWidget: (_, _, _) => const ColoredBox(
-                  color: Color(0xFFF1E5D5),
+                  color: AppColors.imagePlaceholder,
                   child: Icon(
                     Icons.restaurant_rounded,
                     size: 32,
@@ -74,7 +74,7 @@ class FoodCard extends StatelessWidget {
                       width: 20,
                       height: 20,
                       decoration: const BoxDecoration(
-                        color: Colors.white,
+                        color: AppColors.white,
                         shape: BoxShape.circle,
                       ),
                       child: Icon(
@@ -104,7 +104,7 @@ class FoodCard extends StatelessWidget {
                   child: Text(
                     '\$${food.price.toStringAsFixed(1)}',
                     style: const TextStyle(
-                      color: Colors.white,
+                      color: AppColors.white,
                       fontSize: 10,
                       height: 1,
                       fontWeight: FontWeight.w600,
@@ -136,7 +136,7 @@ class _RatingBadge extends StatelessWidget {
       height: 20,
       padding: const EdgeInsets.symmetric(horizontal: 5),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: AppColors.white,
         borderRadius: BorderRadius.circular(12),
       ),
       child: Row(
@@ -153,7 +153,7 @@ class _RatingBadge extends StatelessWidget {
           const SizedBox(width: 2),
           const Icon(
             Icons.star_rounded,
-            color: Color(0xFFFFB72B),
+            color: AppColors.ratingGold,
             size: 12,
           ),
         ],

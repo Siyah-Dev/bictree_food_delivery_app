@@ -1,4 +1,3 @@
-
 import 'package:flutter/material.dart';
 
 import '../../../../core/theme/app_colors.dart';
@@ -24,16 +23,8 @@ class PromoBanner extends StatelessWidget {
                     child: Stack(
                       clipBehavior: Clip.hardEdge,
                       children: [
-                        Positioned(
-                          top: -17,
-                          right: -8,
-                          child: _DecorationCircle(size: 45),
-                        ),
-                        Positioned(
-                          bottom: -19,
-                          left: -8,
-                          child: _DecorationCircle(size: 42),
-                        ),
+                        Positioned(top: -17, right: -8, child: _DecorationCircle(size: 45)),
+                        Positioned(bottom: -19, left: -8, child: _DecorationCircle(size: 42)),
                         const Padding(
                           padding: EdgeInsets.symmetric(horizontal: 10),
                           child: Column(
@@ -43,7 +34,7 @@ class PromoBanner extends StatelessWidget {
                                 'Experience our\ndelicious new dish',
                                 textAlign: TextAlign.center,
                                 style: TextStyle(
-                                  color: Colors.white,
+                                  color: AppColors.white,
                                   fontSize: 13,
                                   height: 1.2,
                                   fontWeight: FontWeight.w400,
@@ -55,7 +46,7 @@ class PromoBanner extends StatelessWidget {
                                 child: Text(
                                   '30% OFF',
                                   style: TextStyle(
-                                    color: Colors.white,
+                                    color: AppColors.white,
                                     fontSize: 29,
                                     height: 1,
                                     fontWeight: FontWeight.w800,
@@ -113,10 +104,7 @@ class _DecorationCircle extends StatelessWidget {
       height: size,
       decoration: BoxDecoration(
         shape: BoxShape.circle,
-        border: Border.all(
-          color: AppColors.headerYellow,
-          width: 8,
-        ),
+        border: Border.all(color: AppColors.headerYellow, width: 8),
       ),
     );
   }
@@ -134,9 +122,7 @@ class _PageIndicator extends StatelessWidget {
       width: isActive ? 20 : 15,
       height: 4,
       decoration: BoxDecoration(
-        color: isActive
-            ? AppColors.primary
-            : const Color(0xFFF0E3A4),
+        color: isActive ? AppColors.primary : AppColors.promoIndicator,
         borderRadius: BorderRadius.circular(4),
       ),
     );

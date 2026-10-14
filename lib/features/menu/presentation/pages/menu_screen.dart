@@ -90,7 +90,7 @@ class _MenuScreenState extends ConsumerState<MenuScreen> {
   Future<void> _showSortOptions() async {
     final selected = await showModalBottomSheet<_MenuSort>(
       context: context,
-      backgroundColor: AppColors.scaffoldBg,
+      backgroundColor: AppColors.background,
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
       ),
@@ -105,7 +105,7 @@ class _MenuScreenState extends ConsumerState<MenuScreen> {
                   width: 40,
                   height: 4,
                   decoration: BoxDecoration(
-                    color: const Color(0xFFD7CBC4),
+                    color: AppColors.menuBorder,
                     borderRadius: BorderRadius.circular(4),
                   ),
                 ),
@@ -117,7 +117,7 @@ class _MenuScreenState extends ConsumerState<MenuScreen> {
                     style: TextStyle(
                       fontSize: 18,
                       fontWeight: FontWeight.w700,
-                      color: Color(0xFF482D26),
+                      color: AppColors.textPrimary,
                     ),
                   ),
                 ),
@@ -126,7 +126,7 @@ class _MenuScreenState extends ConsumerState<MenuScreen> {
                   (option) => RadioListTile<_MenuSort>(
                     value: option,
                     groupValue: _sort,
-                    activeColor: const Color(0xFFF04E23),
+                    activeColor: AppColors.primary,
                     title: Text(option.label),
                     onChanged: (value) => Navigator.pop(context, value),
                   ),
@@ -171,7 +171,7 @@ class _MenuScreenState extends ConsumerState<MenuScreen> {
     final foodsAsync = ref.watch(menuFoodsProvider);
 
     return Scaffold(
-      backgroundColor: const Color(0xFFF8D05A),
+      backgroundColor: AppColors.headerYellow,
       body: SafeArea(
         top: false,
         child: Column(
@@ -190,7 +190,7 @@ class _MenuScreenState extends ConsumerState<MenuScreen> {
             Expanded(
               child: Container(
                 decoration: const BoxDecoration(
-                  color: Color(0xFFF8F6F4),
+                  color: AppColors.background,
                   borderRadius: BorderRadius.vertical(top: Radius.circular(28)),
                 ),
                 child: foodsAsync.when(
@@ -221,7 +221,7 @@ class _MenuScreenState extends ConsumerState<MenuScreen> {
                                 child: Text(
                                   'No recipes found in this category.',
                                   textAlign: TextAlign.center,
-                                  style: TextStyle(color: Color(0xFF766963), fontSize: 13),
+                                  style: TextStyle(color: AppColors.textSecondary, fontSize: 13),
                                 ),
                               ),
                             )
@@ -265,7 +265,7 @@ class _MenuScreenState extends ConsumerState<MenuScreen> {
         widgets.add(
           const Padding(
             padding: EdgeInsets.symmetric(vertical: 20),
-            child: Divider(height: 1, thickness: 0.7, color: Color(0xFFF5D9CC)),
+            child: Divider(height: 1, thickness: 0.7, color: AppColors.dividerColor),
           ),
         );
       }
@@ -288,11 +288,11 @@ class _MenuError extends StatelessWidget {
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            const Icon(Icons.wifi_off_rounded, size: 40, color: Color(0xFF766963)),
+            const Icon(Icons.wifi_off_rounded, size: 40, color: AppColors.textSecondary),
             const SizedBox(height: 12),
             const Text(
               'Unable to load recipes',
-              style: TextStyle(color: Color(0xFF482D26), fontWeight: FontWeight.w600),
+              style: TextStyle(color: AppColors.textPrimary, fontWeight: FontWeight.w600),
             ),
             const SizedBox(height: 12),
             OutlinedButton(onPressed: onRetry, child: const Text('Try again')),

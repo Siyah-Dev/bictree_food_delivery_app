@@ -45,7 +45,7 @@ class HomeHeader extends StatelessWidget {
                     height: 32,
                     padding: const EdgeInsets.only(left: 12, right: 5),
                     decoration: BoxDecoration(
-                      color: Colors.white,
+                      color: AppColors.white,
                       borderRadius: BorderRadius.circular(20),
                     ),
                     child: Row(
@@ -54,7 +54,7 @@ class HomeHeader extends StatelessWidget {
                           child: Text(
                             'Search',
                             style: TextStyle(
-                              color: Color(0xFF8D8580),
+                              color: AppColors.menuSearchHint,
                               fontSize: 10,
                             ),
                           ),
@@ -73,7 +73,7 @@ class HomeHeader extends StatelessWidget {
                               child: SvgPicture.asset(
                                 'assets/icons/header/filter.svg',
                                 colorFilter: const ColorFilter.mode(
-                                  Colors.white,
+                                  AppColors.white,
                                   BlendMode.srcIn,
                                 ),
                               ),

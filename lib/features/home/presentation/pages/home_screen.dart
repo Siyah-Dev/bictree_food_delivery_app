@@ -99,7 +99,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
     final foodsAsync = ref.watch(foodsProvider);
 
     return Scaffold(
-      backgroundColor: AppColors.scaffoldBg,
+      backgroundColor: AppColors.background,
       body: Column(
         children: [
           HomeHeader(

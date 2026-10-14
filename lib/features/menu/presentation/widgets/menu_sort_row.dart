@@ -2,6 +2,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
+import '../../../../core/theme/app_colors.dart';
+
 class MenuSortRow extends StatelessWidget {
   const MenuSortRow({
     super.key,
@@ -21,7 +23,7 @@ class MenuSortRow extends StatelessWidget {
         const Text(
           'Sort By',
           style: TextStyle(
-            color: Color(0xFF655A55),
+            color: AppColors.sortLabel,
             fontSize: 11,
           ),
         ),
@@ -31,7 +33,7 @@ class MenuSortRow extends StatelessWidget {
           child: Text(
             sortLabel,
             style: const TextStyle(
-              color: Color(0xFFF04E23),
+              color: AppColors.primary,
               fontSize: 11,
               fontWeight: FontWeight.w500,
             ),
@@ -39,7 +41,7 @@ class MenuSortRow extends StatelessWidget {
         ),
         const Spacer(),
         Material(
-          color: const Color(0xFFF04E23),
+          color: AppColors.primary,
           shape: const CircleBorder(),
           child: InkWell(
             onTap: onFilterTap,
@@ -67,7 +69,7 @@ class _FilterIcon extends StatelessWidget {
     return SvgPicture.asset(
       'assets/icons/header/filter.svg',
       colorFilter: const ColorFilter.mode(
-        Colors.white,
+        AppColors.white,
         BlendMode.srcIn,
       ),
     );

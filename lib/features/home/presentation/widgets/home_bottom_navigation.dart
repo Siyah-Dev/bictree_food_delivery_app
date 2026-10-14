@@ -62,7 +62,7 @@ class HomeBottomNavigation extends StatelessWidget {
                           _assets[index],
                           fit: BoxFit.contain,
                           colorFilter: ColorFilter.mode(
-                            Colors.white.withValues(
+                            AppColors.white.withValues(
                               alpha: isSelected ? 1 : 0.9,
                             ),
                             BlendMode.srcIn,

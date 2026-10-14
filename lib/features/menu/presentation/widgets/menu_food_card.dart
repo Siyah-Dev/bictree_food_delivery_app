@@ -1,4 +1,3 @@
-
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:food_delivery_app/core/theme/app_colors.dart';
@@ -6,33 +5,23 @@ import 'package:food_delivery_app/core/theme/app_colors.dart';
 import '../../../food/domain/entities/food.dart';
 
 class MenuFoodCard extends StatelessWidget {
-  const MenuFoodCard({
-    super.key,
-    required this.food,
-    required this.onTap,
-    this.onFavoriteTap,
-  });
+  const MenuFoodCard({super.key, required this.food, required this.onTap, this.onFavoriteTap});
 
   final Food food;
   final VoidCallback onTap;
   final VoidCallback? onFavoriteTap;
 
-  static const _orange = Color(0xFFF04E23);
-  static const _text = Color(0xFF482D26);
-
   String get _description {
     if (food.ingredients.isEmpty) return food.name;
 
     final ingredients = food.ingredients.take(4).join(', ');
-    return ingredients.length > 85
-        ? '${ingredients.substring(0, 82)}...'
-        : ingredients;
+    return ingredients.length > 85 ? '${ingredients.substring(0, 82)}...' : ingredients;
   }
 
   @override
   Widget build(BuildContext context) {
     return Material(
-      color: Colors.transparent,
+      color: AppColors.transparent,
       child: InkWell(
         onTap: onTap,
         borderRadius: BorderRadius.circular(22),
@@ -47,22 +36,15 @@ class MenuFoodCard extends StatelessWidget {
                   imageUrl: food.image,
                   fit: BoxFit.cover,
                   placeholder: (_, __) => const ColoredBox(
-                    color: Color(0xFFEDE5DF),
+                    color: AppColors.imagePlaceholder,
                     child: Center(
-                      child: CircularProgressIndicator(
-                        strokeWidth: 2,
-                        color: _orange,
-                      ),
+                      child: CircularProgressIndicator(strokeWidth: 2, color: AppColors.primary),
                     ),
                   ),
                   errorWidget: (_, __, ___) => const ColoredBox(
-                    color: Color(0xFFEDE5DF),
+                    color: AppColors.imagePlaceholder,
                     child: Center(
-                      child: Icon(
-                        Icons.restaurant_rounded,
-                        color: _text,
-                        size: 36,
-                      ),
+                      child: Icon(Icons.restaurant_rounded, color: AppColors.textPrimary, size: 36),
                     ),
                   ),
                 ),
@@ -78,7 +60,7 @@ class MenuFoodCard extends StatelessWidget {
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
                     style: const TextStyle(
-                      color: _text,
+                      color: AppColors.textPrimary,
                       fontSize: 16,
                       height: 1.1,
                       fontWeight: FontWeight.w700,
@@ -91,7 +73,7 @@ class MenuFoodCard extends StatelessWidget {
                 Text(
                   '\$${food.price.toStringAsFixed(2)}',
                   style: const TextStyle(
-                    color: _orange,
+                    color: AppColors.primary,
                     fontSize: 15,
                     height: 1.1,
                     fontWeight: FontWeight.w500,
@@ -104,11 +86,7 @@ class MenuFoodCard extends StatelessWidget {
               _description,
               maxLines: 2,
               overflow: TextOverflow.ellipsis,
-              style: const TextStyle(
-                color: Color(0xFF766963),
-                fontSize: 10,
-                height: 1.25,
-              ),
+              style: const TextStyle(color: AppColors.textSecondary, fontSize: 10, height: 1.25),
             ),
           ],
         ),
@@ -126,28 +104,21 @@ class _RatingBadge extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 2),
-      decoration: BoxDecoration(
-        color: AppColors.primary,
-        borderRadius: BorderRadius.circular(6),
-      ),
+      decoration: BoxDecoration(color: AppColors.primary, borderRadius: BorderRadius.circular(6)),
       child: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
           Text(
             rating.toStringAsFixed(1),
             style: const TextStyle(
-              color: Colors.white,
+              color: AppColors.white,
               fontSize: 9,
               height: 1,
               fontWeight: FontWeight.w600,
             ),
           ),
           const SizedBox(width: 2),
-          const Icon(
-            Icons.star_rounded,
-            color: Color(0xFFFFD65A),
-            size: 10,
-          ),
+          const Icon(Icons.star_rounded, color: AppColors.ratingStar, size: 10),
         ],
       ),
     );

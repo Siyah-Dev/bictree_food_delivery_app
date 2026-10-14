@@ -50,7 +50,7 @@ class MenuHeader extends StatelessWidget {
                       height: 28,
                       padding: const EdgeInsets.only(left: 12, right: 5),
                       decoration: BoxDecoration(
-                        color: Colors.white,
+                        color: AppColors.white,
                         borderRadius: BorderRadius.circular(20),
                       ),
                       child: Row(
@@ -59,7 +59,7 @@ class MenuHeader extends StatelessWidget {
                             child: Text(
                               'Search',
                               style: TextStyle(
-                                color: Color(0xFF938B85),
+                                color: AppColors.menuSearchHint,
                                 fontSize: 10,
                               ),
                             ),
@@ -120,7 +120,7 @@ class MenuHeader extends StatelessWidget {
                                 width: 70,
                                 height: 82,
                                 decoration: BoxDecoration(
-                                  color: const Color(0xFFF7F5F3),
+                                  color: AppColors.background,
                                   borderRadius: BorderRadius.circular(27),
                                 ),
                               ),
@@ -146,7 +146,7 @@ class MenuHeader extends StatelessWidget {
                                 Text(
                                   category.name,
                                   style: const TextStyle(
-                                    color: Color(0xFF3F2923),
+                                    color: AppColors.textPrimary,
                                     fontSize: 10,
                                     height: 1,
                                   ),

@@ -37,7 +37,7 @@ abstract final class AppSnackBar {
     _show(
       context,
       message: message,
-      backgroundColor: Colors.red.shade700,
+      backgroundColor: AppColors.error,
     );
   }
 
@@ -57,7 +57,7 @@ abstract final class AppSnackBar {
           content: Text(
             message,
             style: const TextStyle(
-              color: Colors.white,
+              color: AppColors.white,
               fontSize: 13,
             ),
           ),

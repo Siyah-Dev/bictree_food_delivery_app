@@ -72,8 +72,8 @@ class CategorySection extends StatelessWidget {
                     height: 61,
                     decoration: BoxDecoration(
                       color: isSelected
-                          ? const Color(0xFFFFD978)
-                          : const Color(0xFFF5EAB5),
+                          ? AppColors.categorySelected
+                          : AppColors.inputBackground,
                       borderRadius: BorderRadius.circular(28),
                       border: isSelected
                           ? Border.all(
