@@ -1,7 +1,6 @@
 
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:hive_flutter/hive_flutter.dart';
-
 import '../../../../core/providers/core_providers.dart';
 import '../../data/datasource/food_local_data_source.dart';
 import '../../data/datasource/food_remote_data_source.dart';
