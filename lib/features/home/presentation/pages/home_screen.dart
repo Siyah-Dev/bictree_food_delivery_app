@@ -1,15 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:food_delivery_app/app/route_names.dart';
 import 'package:food_delivery_app/core/utils/app_snackbar.dart';
 import 'package:food_delivery_app/features/home/presentation/widgets/empty_category.dart';
 import 'package:food_delivery_app/features/home/presentation/widgets/home_error.dart';
 import 'package:food_delivery_app/features/home/presentation/widgets/home_loading.dart';
 import 'package:food_delivery_app/features/home/presentation/widgets/section_heading.dart';
+import 'package:food_delivery_app/shared/presentation/widgets/food_category_selector.dart';
+import 'package:go_router/go_router.dart';
 
 import '../../../../core/theme/app_colors.dart';
 import '../../../food/domain/entities/food.dart';
 import '../../../food/presentation/providers/food_providers.dart';
-import '../widgets/category_section.dart';
 import '../widgets/food_card.dart';
 import '../widgets/home_bottom_navigation.dart';
 import '../widgets/home_header.dart';
@@ -76,6 +78,10 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
 
   void _onNavigationTap(int index) {
     if (index == 0) return;
+    if (index == 1) {
+      context.go(RouteNames.menu);
+      return;
+    }
 
     const messages = [
       '',
@@ -93,7 +99,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
     final foodsAsync = ref.watch(foodsProvider);
 
     return Scaffold(
-      backgroundColor: const Color(0xFFF7F5F3),
+      backgroundColor: AppColors.background,
       body: Column(
         children: [
           HomeHeader(
@@ -124,12 +130,13 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                     padding: const EdgeInsets.fromLTRB(35, 5, 34, 18),
                     children: [
                       const SizedBox(height: 10),
-                      CategorySection(
+                      FoodCategorySelector(
                         selectedCategory: _selectedCategory,
-                        onCategoryTap: _onCategoryTap,
+                        onCategorySelected: _onCategoryTap,
+                        style: FoodCategoryStyle.home,
                       ),
                       const SizedBox(height: 4),
-                      const Divider(height: 1, thickness: 1, color: Color(0xFFF1D6C9)),
+                      const Divider(height: 1, thickness: 1, color: AppColors.dividerColor),
                       const SizedBox(height: 12),
                       SectionHeading(
                         title: 'Best Seller',

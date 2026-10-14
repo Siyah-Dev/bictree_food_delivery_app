@@ -1,6 +1,7 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:food_delivery_app/features/auth/presentation/providers/auth_providers.dart';
+import 'package:food_delivery_app/features/menu/presentation/pages/menu_screen.dart';
 import 'package:go_router/go_router.dart';
 
 import '../features/auth/presentation/pages/login_screen.dart';
@@ -47,6 +48,11 @@ final routerProvider = Provider<GoRouter>((ref) {
         name: 'home',
         builder: (context, state) => const HomeScreen(),
       ),
+      GoRoute(
+  path: RouteNames.menu,
+  name: 'menu',
+  builder: (context, state) => const MenuScreen(),
+),
     ],
   );
 
