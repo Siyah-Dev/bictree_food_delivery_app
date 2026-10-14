@@ -1,32 +1,32 @@
 import 'package:flutter/material.dart';
 
-class AppTheme {
-  static ThemeData get light {
-    const seedColor = Color(0xFFF47B44);
+import 'app_colors.dart';
 
+abstract final class AppTheme {
+  static ThemeData get light {
     return ThemeData(
       useMaterial3: true,
+      scaffoldBackgroundColor: AppColors.background,
       colorScheme: ColorScheme.fromSeed(
-        seedColor: seedColor,
+        seedColor: AppColors.primary,
         brightness: Brightness.light,
+        primary: AppColors.primary,
+        surface: AppColors.background,
       ),
-      scaffoldBackgroundColor: const Color(0xFFFFFBF8),
-      appBarTheme: const AppBarTheme(
-        centerTitle: false,
-        elevation: 0,
-      ),
-      inputDecorationTheme: InputDecorationTheme(
-        filled: true,
-        border: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(14),
+      fontFamily: 'Roboto',
+      textTheme: const TextTheme(
+        bodyMedium: TextStyle(
+          color: AppColors.textPrimary,
+          fontSize: 14,
         ),
-      ),
-      elevatedButtonTheme: ElevatedButtonThemeData(
-        style: ElevatedButton.styleFrom(
-          minimumSize: const Size.fromHeight(52),
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(14),
-          ),
+        bodySmall: TextStyle(
+          color: AppColors.textSecondary,
+          fontSize: 11,
+        ),
+        titleMedium: TextStyle(
+          color: AppColors.textPrimary,
+          fontSize: 18,
+          fontWeight: FontWeight.w700,
         ),
       ),
     );
