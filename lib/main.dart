@@ -9,5 +9,8 @@ Future<void> main() async {
 
   await Hive.initFlutter();
 
+  await Hive.openBox<Map>('recipe_cache');
+  await Hive.openBox<Map>('cart');
+
   runApp(const ProviderScope(child: FoodDeliveryApp()));
 }
