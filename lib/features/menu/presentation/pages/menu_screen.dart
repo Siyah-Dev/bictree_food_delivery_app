@@ -37,14 +37,8 @@ class _MenuScreenState extends ConsumerState<MenuScreen> {
 
   final Set<int> _favoriteIds = {};
 
-  // MenuHeader layout measurements.
-  // Search top padding + search height + bottom spacing.
   static const double _headerSpacingBeforeCategories = 83;
-
-  // Move the white panel upward behind the orange category section.
   static const double _bodyOverlap = 55;
-
-  // Keep the sort row below the category labels.
   static const double _contentTopSpacing = 55;
 
   List<Food> _filterFoods(List<Food> foods) {
@@ -234,7 +228,7 @@ class _MenuScreenState extends ConsumerState<MenuScreen> {
                 _showMessage('Search is coming next.');
               },
               onFilterTap: () {
-                _showMessage('Search and Filter is next.');
+                context.push(RouteNames.searchFilter);
               },
               onCartTap: () {
                 _showMessage('Cart is coming next.');

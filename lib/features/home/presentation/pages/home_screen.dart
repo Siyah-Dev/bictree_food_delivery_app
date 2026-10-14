@@ -105,8 +105,8 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
           HomeHeader(
             onSearchTap: () => AppSnackBar.show(context, message: 'Search screen is coming next.'),
 
-            onFilterTap: () =>
-                AppSnackBar.show(context, message: 'Search and Filter screen is coming next.'),
+            onFilterTap: () =>context.push(RouteNames.searchFilter),
+                
             onCartTap: () => AppSnackBar.show(context, message: 'Cart screen is coming next.'),
             onNotificationTap: () =>
                 AppSnackBar.show(context, message: 'Notifications are outside this task.'),
