@@ -25,16 +25,11 @@ class HomeHeader extends StatelessWidget {
     final topInset = MediaQuery.paddingOf(context).top;
 
     return Container(
-      height: 187,
-      padding: EdgeInsets.fromLTRB(34, topInset + 38, 34, 15),
-      decoration: const BoxDecoration(
-        color: AppColors.headerYellow,
-        borderRadius: BorderRadius.vertical(
-          bottom: Radius.circular(28),
-        ),
-      ),
+      color: AppColors.headerYellow,
+      padding: EdgeInsets.fromLTRB(34, topInset + 22, 34, 20),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
+        mainAxisSize: MainAxisSize.min,
         children: [
           FoodSearchHeader(
             onSearchTap: onSearchTap,
@@ -43,7 +38,7 @@ class HomeHeader extends StatelessWidget {
             onNotificationTap: onNotificationTap,
             onProfileTap: onProfileTap,
           ),
-          const SizedBox(height: 20),
+          const SizedBox(height: 16),
           const Text(
             'Good Morning',
             style: TextStyle(
