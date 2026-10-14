@@ -1,6 +1,7 @@
 
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:food_delivery_app/shared/models/food_category.dart';
 
 import '../../../../core/theme/app_colors.dart';
 
@@ -24,39 +25,16 @@ class CategorySection extends StatelessWidget {
   final String? selectedCategory;
   final ValueChanged<String> onCategoryTap;
 
-  static const categories = [
-    FoodCategory(
-      name: 'Snacks',
-      asset: 'assets/icons/categories/snacks.svg',
-    ),
-    FoodCategory(
-      name: 'Meal',
-      asset: 'assets/icons/categories/meals.svg',
-    ),
-    FoodCategory(
-      name: 'Vegan',
-      asset: 'assets/icons/categories/vegan.svg',
-    ),
-    FoodCategory(
-      name: 'Dessert',
-      asset: 'assets/icons/categories/desserts.svg',
-    ),
-    FoodCategory(
-      name: 'Drinks',
-      asset: 'assets/icons/categories/drinks.svg',
-    ),
-  ];
-
   @override
   Widget build(BuildContext context) {
     return SizedBox(
       height: 89,
       child: ListView.separated(
         scrollDirection: Axis.horizontal,
-        itemCount: categories.length,
+        itemCount: FoodCategories.all.length,
         separatorBuilder: (_, _) => const SizedBox(width: 16),
         itemBuilder: (context, index) {
-          final category = categories[index];
+          final category = FoodCategories.all[index];
           final isSelected = selectedCategory == category.name;
 
           return SizedBox(

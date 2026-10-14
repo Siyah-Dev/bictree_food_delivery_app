@@ -35,13 +35,13 @@ class MenuFoodCard extends StatelessWidget {
                 child: CachedNetworkImage(
                   imageUrl: food.image,
                   fit: BoxFit.cover,
-                  placeholder: (_, __) => const ColoredBox(
+                  placeholder: (_, _) => const ColoredBox(
                     color: AppColors.imagePlaceholder,
                     child: Center(
                       child: CircularProgressIndicator(strokeWidth: 2, color: AppColors.primary),
                     ),
                   ),
-                  errorWidget: (_, __, ___) => const ColoredBox(
+                  errorWidget: (_, _, _) => const ColoredBox(
                     color: AppColors.imagePlaceholder,
                     child: Center(
                       child: Icon(Icons.restaurant_rounded, color: AppColors.textPrimary, size: 36),

@@ -1,13 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:food_delivery_app/app/route_names.dart';
-import 'package:food_delivery_app/core/theme/app_colors.dart';
+import 'package:food_delivery_app/features/menu/presentation/widgets/menu_error.dart';
 import 'package:go_router/go_router.dart';
 
+import '../../../../app/route_names.dart';
+import '../../../../core/theme/app_colors.dart';
 import '../../../../core/utils/app_snackbar.dart';
 import '../../../food/domain/entities/food.dart';
 import '../../../home/presentation/widgets/home_bottom_navigation.dart';
-import '../../presentation/providers/menu_providers.dart';
+import '../providers/menu_providers.dart';
 import '../widgets/menu_food_card.dart';
 import '../widgets/menu_header.dart';
 import '../widgets/menu_sort_row.dart';
@@ -33,13 +34,25 @@ enum _MenuSort {
 class _MenuScreenState extends ConsumerState<MenuScreen> {
   String _selectedCategory = 'Snacks';
   _MenuSort _sort = _MenuSort.popular;
+
   final Set<int> _favoriteIds = {};
+
+  // MenuHeader layout measurements.
+  // Search top padding + search height + bottom spacing.
+  static const double _headerSpacingBeforeCategories = 83;
+
+  // Move the white panel upward behind the orange category section.
+  static const double _bodyOverlap = 55;
+
+  // Keep the sort row below the category labels.
+  static const double _contentTopSpacing = 55;
 
   List<Food> _filterFoods(List<Food> foods) {
     final category = _selectedCategory.toLowerCase();
 
     return foods.where((food) {
       final tags = food.tags.map((tag) => tag.toLowerCase()).toList();
+
       final mealTypes = food.mealType.map((meal) => meal.toLowerCase()).toList();
 
       switch (category) {
@@ -47,16 +60,21 @@ class _MenuScreenState extends ConsumerState<MenuScreen> {
           return tags.any(
             (tag) => tag.contains('snack') || tag.contains('appetizer') || tag.contains('starter'),
           );
+
         case 'meal':
           return mealTypes.any((meal) => ['breakfast', 'lunch', 'dinner'].contains(meal));
+
         case 'vegan':
           return tags.any((tag) => tag.contains('vegan') || tag.contains('plant-based'));
+
         case 'dessert':
           return mealTypes.any((meal) => meal.contains('dessert')) ||
               tags.any((tag) => tag.contains('dessert') || tag.contains('sweet'));
+
         case 'drinks':
           return mealTypes.any((meal) => meal.contains('drink') || meal.contains('beverage')) ||
               tags.any((tag) => tag.contains('drink') || tag.contains('beverage'));
+
         default:
           return true;
       }
@@ -69,19 +87,15 @@ class _MenuScreenState extends ConsumerState<MenuScreen> {
     switch (_sort) {
       case _MenuSort.popular:
         result.sort((a, b) => b.reviewCount.compareTo(a.reviewCount));
-        break;
 
       case _MenuSort.rating:
         result.sort((a, b) => b.rating.compareTo(a.rating));
-        break;
 
       case _MenuSort.name:
         result.sort((a, b) => a.name.compareTo(b.name));
-        break;
 
       case _MenuSort.cookingTime:
         result.sort((a, b) => a.totalTimeMinutes.compareTo(b.totalTimeMinutes));
-        break;
     }
 
     return result;
@@ -122,13 +136,22 @@ class _MenuScreenState extends ConsumerState<MenuScreen> {
                   ),
                 ),
                 const SizedBox(height: 12),
-                ..._MenuSort.values.map(
-                  (option) => RadioListTile<_MenuSort>(
-                    value: option,
-                    groupValue: _sort,
-                    activeColor: AppColors.primary,
-                    title: Text(option.label),
-                    onChanged: (value) => Navigator.pop(context, value),
+                RadioGroup<_MenuSort>(
+                  groupValue: _sort,
+                  onChanged: (value) {
+                    if (value != null) {
+                      Navigator.pop(context, value);
+                    }
+                  },
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: _MenuSort.values.map((option) { 
+                      return RadioListTile<_MenuSort>(
+                        value: option,
+                        activeColor: AppColors.primary,
+                        title: Text(option.label),
+                      );
+                    }).toList(),
                   ),
                 ),
               ],
@@ -166,78 +189,107 @@ class _MenuScreenState extends ConsumerState<MenuScreen> {
     _showMessage(messages[index]);
   }
 
+  void _onCategorySelected(String category) {
+    setState(() => _selectedCategory = category);
+  }
+
   @override
   Widget build(BuildContext context) {
     final foodsAsync = ref.watch(menuFoodsProvider);
+    final topPadding = MediaQuery.paddingOf(context).top;
+
+    final bodyTop = topPadding + _headerSpacingBeforeCategories + _bodyOverlap;
 
     return Scaffold(
-      backgroundColor: AppColors.headerYellow,
-      body: SafeArea(
-        top: false,
-        child: Column(
-          children: [
-            MenuHeader(
-              selectedCategory: _selectedCategory,
-              onCategorySelected: (category) {
-                setState(() => _selectedCategory = category);
-              },
-              onSearchTap: () => _showMessage('Search is coming next.'),
-              onFilterTap: () => _showMessage('Search and Filter is next.'),
-              onCartTap: () => _showMessage('Cart is coming next.'),
-              onNotificationTap: () => _showMessage('Notifications are outside this task.'),
-              onProfileTap: () => _showMessage('Profile is outside this task.'),
-            ),
-            Expanded(
-              child: Container(
-                decoration: const BoxDecoration(
-                  color: AppColors.background,
-                  borderRadius: BorderRadius.vertical(top: Radius.circular(28)),
-                ),
-                child: foodsAsync.when(
-                  loading: () =>
-                      const Center(child: CircularProgressIndicator(color:AppColors.primary)),
-                  error: (error, stackTrace) =>
-                      _MenuError(onRetry: () => ref.invalidate(menuFoodsProvider)),
-                  data: (foods) {
-                    final filteredFoods = _sortFoods(_filterFoods(foods));
+      backgroundColor: AppColors.white,
+      body: Stack(
+        children: [
+          const Positioned.fill(child: ColoredBox(color: AppColors.headerYellow)),
 
-                    return RefreshIndicator(
-                      color: AppColors.primary,
-                      onRefresh: () => ref.refresh(menuFoodsProvider.future),
-                      child: ListView(
-                        physics: const AlwaysScrollableScrollPhysics(),
-                        padding: const EdgeInsets.fromLTRB(34, 20, 34, 24),
-                        children: [
-                          MenuSortRow(
-                            sortLabel: _sort.label,
-                            onSortTap: _showSortOptions,
-                            onFilterTap: _showSortOptions,
-                          ),
-                          const SizedBox(height: 20),
-                          if (filteredFoods.isEmpty)
-                            const Padding(
-                              padding: EdgeInsets.symmetric(vertical: 60),
-                              child: Center(
-                                child: Text(
-                                  'No recipes found in this category.',
-                                  textAlign: TextAlign.center,
-                                  style: TextStyle(color: AppColors.textSecondary, fontSize: 13),
-                                ),
-                              ),
-                            )
-                          else
-                            ..._buildFoodList(filteredFoods),
-                        ],
-                      ),
-                    );
-                  },
-                ),
+          Positioned(
+            top: bodyTop,
+            left: 0,
+            right: 0,
+            bottom: 0,
+            child: Container(
+              decoration: const BoxDecoration(
+                color: AppColors.background,
+                borderRadius: BorderRadius.vertical(top: Radius.circular(28)),
+              ),
+              child: Padding(
+                padding: const EdgeInsets.only(top: _contentTopSpacing),
+                child: _buildFoodContent(foodsAsync),
               ),
             ),
-          ],
-        ),
+          ),
+
+          Positioned(
+            top: 0,
+            left: 0,
+            right: 0,
+            child: MenuHeader(
+              selectedCategory: _selectedCategory,
+              onCategorySelected: _onCategorySelected,
+              onSearchTap: () {
+                _showMessage('Search is coming next.');
+              },
+              onFilterTap: () {
+                _showMessage('Search and Filter is next.');
+              },
+              onCartTap: () {
+                _showMessage('Cart is coming next.');
+              },
+              onNotificationTap: () {
+                _showMessage('Notifications are outside this task.');
+              },
+              onProfileTap: () {
+                _showMessage('Profile is outside this task.');
+              },
+            ),
+          ),
+        ],
       ),
       bottomNavigationBar: HomeBottomNavigation(selectedIndex: 1, onItemSelected: _onNavigationTap),
+    );
+  }
+
+  Widget _buildFoodContent(AsyncValue<List<Food>> foodsAsync) {
+    return foodsAsync.when(
+      loading: () => const Center(child: CircularProgressIndicator(color: AppColors.primary)),
+      error: (error, stackTrace) => MenuError(onRetry: () => ref.invalidate(menuFoodsProvider)),
+      data: (foods) {
+        final filteredFoods = _sortFoods(_filterFoods(foods));
+
+        return RefreshIndicator(
+          color: AppColors.primary,
+          onRefresh: () => ref.refresh(menuFoodsProvider.future),
+          child: ListView(
+            physics: const AlwaysScrollableScrollPhysics(),
+            padding: const EdgeInsets.fromLTRB(34, 20, 34, 24),
+            children: [
+              MenuSortRow(
+                sortLabel: _sort.label,
+                onSortTap: _showSortOptions,
+                onFilterTap: _showSortOptions,
+              ),
+              const SizedBox(height: 20),
+              if (filteredFoods.isEmpty)
+                const Padding(
+                  padding: EdgeInsets.symmetric(vertical: 60),
+                  child: Center(
+                    child: Text(
+                      'No recipes found in this category.',
+                      textAlign: TextAlign.center,
+                      style: TextStyle(color: AppColors.textSecondary, fontSize: 13),
+                    ),
+                  ),
+                )
+              else
+                ..._buildFoodList(filteredFoods),
+            ],
+          ),
+        );
+      },
     );
   }
 
@@ -250,7 +302,9 @@ class _MenuScreenState extends ConsumerState<MenuScreen> {
       widgets.add(
         MenuFoodCard(
           food: food,
-          onTap: () => _showMessage('${food.name} details are coming next.'),
+          onTap: () {
+            _showMessage('${food.name} details are coming next.');
+          },
           onFavoriteTap: () {
             setState(() {
               if (!_favoriteIds.add(food.id)) {
@@ -272,33 +326,5 @@ class _MenuScreenState extends ConsumerState<MenuScreen> {
     }
 
     return widgets;
-  }
-}
-
-class _MenuError extends StatelessWidget {
-  const _MenuError({required this.onRetry});
-
-  final VoidCallback onRetry;
-
-  @override
-  Widget build(BuildContext context) {
-    return Center(
-      child: Padding(
-        padding: const EdgeInsets.all(28),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            const Icon(Icons.wifi_off_rounded, size: 40, color: AppColors.textSecondary),
-            const SizedBox(height: 12),
-            const Text(
-              'Unable to load recipes',
-              style: TextStyle(color: AppColors.textPrimary, fontWeight: FontWeight.w600),
-            ),
-            const SizedBox(height: 12),
-            OutlinedButton(onPressed: onRetry, child: const Text('Try again')),
-          ],
-        ),
-      ),
-    );
   }
 }
