@@ -10,10 +10,9 @@ import '../model/food_model.dart';
 
 class FoodRepositoryImpl implements FoodRepository {
   FoodRepositoryImpl({
-    required FoodRemoteDataSource remoteDataSource,
-    required FoodLocalDataSource localDataSource,
-  }) : _remoteDataSource = remoteDataSource,
-       _localDataSource = localDataSource;
+    required this._remoteDataSource,
+    required this._localDataSource,
+  });
 
   final FoodRemoteDataSource _remoteDataSource;
   final FoodLocalDataSource _localDataSource;
