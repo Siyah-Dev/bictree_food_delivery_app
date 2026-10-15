@@ -1,4 +1,3 @@
-
 import 'package:hive_flutter/hive_flutter.dart';
 
 import '../model/food_model.dart';
@@ -8,19 +7,22 @@ class FoodLocalDataSource {
 
   final Box<Map> _box;
 
-  static const _firstPageKey = 'first_page';
-
-  Future<void> saveFirstPage(List<FoodModel> foods) async {
-    await _box.put(
-      _firstPageKey,
-      {
-        'foods': foods.map((food) => food.toJson()).toList(),
-      },
-    );
+  String _cacheKey({required int limit, required int skip}) {
+    return 'recipes_page_${limit}_$skip';
   }
 
-  List<FoodModel>? getFirstPage() {
-    final cached = _box.get(_firstPageKey);
+  Future<void> savePage({
+    required List<FoodModel> foods,
+    required int limit,
+    required int skip,
+  }) async {
+    await _box.put(_cacheKey(limit: limit, skip: skip), {
+      'foods': foods.map((food) => food.toJson()).toList(),
+    });
+  }
+
+  List<FoodModel>? getPage({required int limit, required int skip}) {
+    final cached = _box.get(_cacheKey(limit: limit, skip: skip));
 
     if (cached == null) return null;
 
@@ -29,11 +31,8 @@ class FoodLocalDataSource {
     if (records is! List) return null;
 
     return records
-        .map(
-          (item) => FoodModel.fromCache(
-            Map<dynamic, dynamic>.from(item as Map),
-          ),
-        )
+        .whereType<Map>()
+        .map((item) => FoodModel.fromCache(Map<dynamic, dynamic>.from(item)))
         .toList();
   }
 }
