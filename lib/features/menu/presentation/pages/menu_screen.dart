@@ -140,11 +140,7 @@ class MenuScreen extends ConsumerWidget {
               ),
               child: Padding(
                 padding: const EdgeInsets.only(top: _contentTopSpacing),
-                child: _buildFoodContent(
-                  context,
-                  menuAsync,
-                  menuController,
-                ),
+                child: _buildFoodContent(context, menuAsync, menuController),
               ),
             ),
           ),
@@ -154,13 +150,10 @@ class MenuScreen extends ConsumerWidget {
             left: 0,
             right: 0,
             child: MenuHeader(
-              selectedCategory:
-                  menuAsync.hasValue
-                      ? menuAsync.requireValue.selectedCategory
-                      : 'Snacks',
-              onCategorySelected: menuAsync.hasValue
-                  ? menuController.selectCategory
-                  : (_) {},
+              selectedCategory: menuAsync.hasValue
+                  ? menuAsync.requireValue.selectedCategory
+                  : 'Snacks',
+              onCategorySelected: menuAsync.hasValue ? menuController.selectCategory : (_) {},
               onSearchTap: () {
                 _showMessage(context, 'Search is coming next.');
               },
@@ -196,21 +189,27 @@ class MenuScreen extends ConsumerWidget {
       loading: () => const Center(child: CircularProgressIndicator(color: AppColors.primary)),
       error: (error, stackTrace) => MenuError(onRetry: menuController.refreshFoods),
       data: (menuState) {
-        final filteredFoods = menuController.filterAndSortFoods();
+        final filteredFoods = menuController.filterAndSortFoods(menuState);
 
         return RefreshIndicator(
           color: AppColors.primary,
-          onRefresh: menuController.refreshFoods,
+          onRefresh: () async {
+            try {
+              await menuController.refreshFoods();
+            } catch (_) {
+              if (!context.mounted) return;
+
+              AppSnackBar.show(context, message: 'Unable to refresh foods. Please try again.');
+            }
+          },
           child: ListView(
             physics: const AlwaysScrollableScrollPhysics(),
             padding: const EdgeInsets.fromLTRB(34, 20, 34, 24),
             children: [
               MenuSortRow(
                 sortLabel: menuState.sort.label,
-                onSortTap: () =>
-                    _showSortOptions(context, menuState, menuController),
-                onFilterTap: () =>
-                    _showSortOptions(context, menuState, menuController),
+                onSortTap: () => _showSortOptions(context, menuState, menuController),
+                onFilterTap: () => context.push(RouteNames.searchFilter),
               ),
               const SizedBox(height: 20),
               if (filteredFoods.isEmpty)
@@ -225,11 +224,7 @@ class MenuScreen extends ConsumerWidget {
                   ),
                 )
               else
-                ..._buildFoodList(
-                  context,
-                  menuController,
-                  filteredFoods,
-                ),
+                ..._buildFoodList(context, menuController, filteredFoods),
             ],
           ),
         );

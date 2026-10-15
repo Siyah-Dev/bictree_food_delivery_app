@@ -13,30 +13,23 @@ class HomeController extends AsyncNotifier<HomeState> {
     return HomeState(foods: foods);
   }
 
-  
-Future<void> refreshFoods() async {
-  final previous = state;
+  Future<void> refreshFoods() async {
+    final previousState = state;
 
-  state = const AsyncLoading<HomeState>().copyWithPrevious(
-    previous,
-  );
+    try {
+      final foods = await ref.read(foodRepositoryProvider).getFoods(limit: 10, skip: 0);
 
-  try {
-    final foods = await ref
-        .read(foodRepositoryProvider)
-        .getFoods(limit: 10, skip: 0);
+      final current = previousState.value ?? const HomeState();
 
-    final current = state.value ?? const HomeState();
-
-    state = AsyncData(current.copyWith(foods: foods));
-  } catch (error, stackTrace) {
-    state = AsyncError<HomeState>(
-      error,
-      stackTrace,
-    ).copyWithPrevious(previous);
+      state = AsyncData(current.copyWith(foods: foods));
+    } catch (error, stackTrace) {
+      if (!previousState.hasValue) {
+        state = AsyncError(error, stackTrace);
+        return;
+      }
+      rethrow;
+    }
   }
-}
-
 
   void toggleCategory(String category) {
     final current = state.hasValue ? state.requireValue : const HomeState();
@@ -47,9 +40,7 @@ Future<void> refreshFoods() async {
     );
   }
 
-  List<Food> filterFoods() {
-  final current = state.requireValue;
-
+  List<Food> filterFoods(HomeState current) {
   return FoodCategoryFilter.filter(
     current.foods,
     category: current.selectedCategory,
