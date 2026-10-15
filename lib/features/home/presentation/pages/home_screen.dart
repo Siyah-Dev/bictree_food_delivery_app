@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:food_delivery_app/features/cart/presentation/widgets/cart_drawer.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../../app/route_names.dart';
@@ -169,7 +170,15 @@ class HomeScreen extends ConsumerWidget {
             child: HomeHeader(
               onSearchTap: () => context.push(RouteNames.searchFilter),
               onFilterTap: () => context.push(RouteNames.searchFilter),
-              onCartTap: () => _showMessage(context, 'Cart screen is coming next.'),
+              onCartTap: () {
+                CartDrawer.show(
+                  context,
+                  onCheckout: () {
+                    AppSnackBar.show(context, message: 'Confirm Order screen is the next feature.');
+                  },
+                  onBrowseMenu: () => context.go(RouteNames.menu),
+                );
+              },
               onNotificationTap: () =>
                   _showMessage(context, 'Notifications are outside this task.'),
               onProfileTap: () => _showMessage(context, 'Profile is outside this task.'),
