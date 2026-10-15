@@ -5,6 +5,7 @@ class RouteNames {
 
   static const String home = '/home';
   static const String menu = '/menu';
-    static const String searchFilter = '/search-filter';
+  static const String searchFilter = '/search-filter';
+  static const String foodDetails = '/food-details';
 
 }

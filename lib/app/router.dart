@@ -1,6 +1,9 @@
 import 'package:flutter/foundation.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:food_delivery_app/features/auth/presentation/providers/auth_providers.dart';
+import 'package:food_delivery_app/features/food/domain/entities/food.dart';
+import 'package:food_delivery_app/features/food_details/presentation/pages/food_details_screen.dart';
 import 'package:food_delivery_app/features/menu/presentation/pages/menu_screen.dart';
 import 'package:food_delivery_app/features/search_filter/presentation/pages/search_filter_screen.dart';
 import 'package:go_router/go_router.dart';
@@ -51,6 +54,17 @@ final routerProvider = Provider<GoRouter>((ref) {
         name: 'searchFilter',
         builder: (context, state) => const SearchFilterScreen(),
       ),
+      GoRoute(
+  path: RouteNames.foodDetails,
+  name: 'foodDetails',
+  builder: (context, state) {
+    final extra = state.extra;
+
+    return FoodDetailsScreen(
+      food: extra is Food ? extra : null,
+    );
+  },
+),
     ],
   );
 
