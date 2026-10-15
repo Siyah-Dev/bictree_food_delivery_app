@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:food_delivery_app/core/widgets/offline_banner.dart';
 import 'package:food_delivery_app/features/cart/presentation/widgets/cart_drawer.dart';
 import 'package:go_router/go_router.dart';
 
@@ -80,8 +81,20 @@ class HomeScreen extends ConsumerWidget {
                   }
                 },
                 child: homeAsync.when(
-                  loading: () => const HomeLoading(),
-                  error: (error, stackTrace) => HomeError(onRetry: homeController.refreshFoods),
+                  loading: () => Column(
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: [
+                      const OfflineBanner(),
+                      const Expanded(child: HomeLoading()),
+                    ],
+                  ),
+                  error: (error, stackTrace) => Column(
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: [
+                      const OfflineBanner(),
+                      Expanded(child: HomeError(onRetry: homeController.refreshFoods)),
+                    ],
+                  ),
                   data: (homeState) {
                     final visibleFoods = homeController.filterFoods(homeState);
                     final bestSellers = homeController.bestSellers(visibleFoods);
@@ -91,6 +104,7 @@ class HomeScreen extends ConsumerWidget {
                       physics: const AlwaysScrollableScrollPhysics(),
                       padding: const EdgeInsets.fromLTRB(35, 30, 34, 18),
                       children: [
+                        const OfflineBanner(),
                         FoodCategorySelector(
                           selectedCategory: homeState.selectedCategory,
                           onCategorySelected: homeController.toggleCategory,
