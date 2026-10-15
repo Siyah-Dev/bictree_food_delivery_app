@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:food_delivery_app/core/widgets/offline_banner.dart';
 import 'package:food_delivery_app/features/cart/presentation/widgets/cart_drawer.dart';
 import 'package:food_delivery_app/features/menu/presentation/controller/menu_state.dart';
 import 'package:food_delivery_app/features/menu/presentation/widgets/menu_error.dart';
@@ -191,8 +192,22 @@ class MenuScreen extends ConsumerWidget {
     menu_controller.MenuController menuController,
   ) {
     return menuAsync.when(
-      loading: () => const Center(child: CircularProgressIndicator(color: AppColors.primary)),
-      error: (error, stackTrace) => MenuError(onRetry: menuController.refreshFoods),
+      loading: () => Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          const OfflineBanner(),
+          const Expanded(
+            child: Center(child: CircularProgressIndicator(color: AppColors.primary)),
+          ),
+        ],
+      ),
+      error: (error, stackTrace) => Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          const OfflineBanner(),
+          Expanded(child: MenuError(onRetry: menuController.refreshFoods)),
+        ],
+      ),
       data: (menuState) {
         final filteredFoods = menuController.filterAndSortFoods(menuState);
 
@@ -211,6 +226,7 @@ class MenuScreen extends ConsumerWidget {
             physics: const AlwaysScrollableScrollPhysics(),
             padding: const EdgeInsets.fromLTRB(34, 20, 34, 24),
             children: [
+              const OfflineBanner(),
               MenuSortRow(
                 sortLabel: menuState.sort.label,
                 onSortTap: () => _showSortOptions(context, menuState, menuController),
