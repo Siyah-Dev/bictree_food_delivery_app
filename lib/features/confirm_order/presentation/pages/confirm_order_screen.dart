@@ -273,13 +273,8 @@ class ConfirmOrderScreen extends ConsumerWidget {
                           ),
                           const SizedBox(height: 20),
                           Center(
-                            child: SizedBox(
-                              width: 150,
-                              height: 36,
-                              child:AppPrimaryButton(onPressed: () => _placeOrder(context, ref), isLoading: false, label: 'Place Order', backgroundColor: AppColors.fingerprintBackground,
-                              foregroundColor: AppColors.primary,),
-                              
-                              
+                            child: AppPrimaryButton(onPressed: () => _placeOrder(context, ref), isLoading: false, label: 'Place Order', backgroundColor: AppColors.fingerprintBackground,
+                            foregroundColor: AppColors.primary,
                             ),
                           ),
                         ],
