@@ -1,4 +1,3 @@
-
 import 'package:dio/dio.dart';
 import 'package:food_delivery_app/core/constants/api_end_points.dart';
 
@@ -15,25 +14,18 @@ class FoodRemoteDataSource {
   }) async {
     final response = await _dio.get<Map<String, dynamic>>(
       ApiEndpoints.recipes,
-      queryParameters: {
-        'limit': limit,
-        'skip': skip,
-      },
+      queryParameters: {'limit': limit, 'skip': skip},
     );
 
     final recipes = response.data?['recipes'];
 
     if (recipes is! List) {
-      throw const FormatException(
-        'Invalid recipe response from server.',
-      );
+      throw const FormatException('Invalid recipe response from server.');
     }
 
     return recipes
         .map(
-          (item) => FoodModel.fromJson(
-            Map<String, dynamic>.from(item as Map),
-          ),
+          (item) => FoodModel.fromJson(Map<String, dynamic>.from(item as Map)),
         )
         .toList();
   }
@@ -47,16 +39,12 @@ class FoodRemoteDataSource {
     final recipes = response.data?['recipes'];
 
     if (recipes is! List) {
-      throw const FormatException(
-        'Invalid search response from server.',
-      );
+      throw const FormatException('Invalid search response from server.');
     }
 
     return recipes
         .map(
-          (item) => FoodModel.fromJson(
-            Map<String, dynamic>.from(item as Map),
-          ),
+          (item) => FoodModel.fromJson(Map<String, dynamic>.from(item as Map)),
         )
         .toList();
   }

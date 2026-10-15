@@ -1,4 +1,3 @@
-
 import '../../domain/entities/food.dart';
 
 class FoodModel extends Food {
