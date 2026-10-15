@@ -9,12 +9,18 @@ class AppPrimaryButton extends StatelessWidget {
     required this.isLoading,
     required this.label,
     this.width = 182,
+    this.backgroundColor,
+    this.foregroundColor,
+    this.disabledBackgroundColor,
   });
 
   final VoidCallback? onPressed;
   final bool isLoading;
   final String label;
   final double width;
+  final Color? backgroundColor;
+  final Color? foregroundColor;
+  final Color? disabledBackgroundColor;
 
   @override
   Widget build(BuildContext context) {
@@ -24,9 +30,9 @@ class AppPrimaryButton extends StatelessWidget {
       child: ElevatedButton(
         onPressed: isLoading ? null : onPressed,
         style: ElevatedButton.styleFrom(
-          backgroundColor: AppColors.primary,
-          foregroundColor: AppColors.white,
-          disabledBackgroundColor: AppColors.primary,
+          backgroundColor: backgroundColor??AppColors.primary,
+          foregroundColor: foregroundColor??AppColors.white,
+          disabledBackgroundColor:disabledBackgroundColor?? AppColors.fingerprintBackground,
           elevation: 0,
           padding: EdgeInsets.zero,
           shape: const StadiumBorder(),
@@ -35,10 +41,7 @@ class AppPrimaryButton extends StatelessWidget {
             ? const SizedBox(
                 width: 19,
                 height: 19,
-                child: CircularProgressIndicator(
-                  strokeWidth: 2,
-                  color: AppColors.white,
-                ),
+                child: CircularProgressIndicator(strokeWidth: 2, color: AppColors.white),
               )
             : Text(
                 label,
