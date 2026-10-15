@@ -120,10 +120,7 @@ class HomeScreen extends ConsumerWidget {
                                   width: 73,
                                   child: FoodCard(
                                     food: food,
-                                    onTap: () => _showMessage(
-                                      context,
-                                      '${food.name} details will be implemented next.',
-                                    ),
+                                    onTap: () => context.push(RouteNames.foodDetails, extra: food),
                                   ),
                                 );
                               },
@@ -153,10 +150,7 @@ class HomeScreen extends ConsumerWidget {
                               return FoodCard(
                                 food: food,
                                 isRecommended: true,
-                                onTap: () => _showMessage(
-                                  context,
-                                  '${food.name} details will be implemented next.',
-                                ),
+                                onTap: () => context.push(RouteNames.foodDetails, extra: food),
                               );
                             },
                           ),

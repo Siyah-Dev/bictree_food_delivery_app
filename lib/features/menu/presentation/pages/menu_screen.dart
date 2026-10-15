@@ -245,9 +245,7 @@ class MenuScreen extends ConsumerWidget {
       widgets.add(
         MenuFoodCard(
           food: food,
-          onTap: () {
-            _showMessage(context, '${food.name} details are coming next.');
-          },
+          onTap: () => context.push(RouteNames.foodDetails, extra: food),
           onFavoriteTap: () => menuController.toggleFavorite(food.id),
         ),
       );
