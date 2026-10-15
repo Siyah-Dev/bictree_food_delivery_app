@@ -34,7 +34,11 @@ void main() {
 
   test('loads foods and category selection toggles filtering', () async {
     final snacks = _food(id: 1, tags: const ['snack']);
-    final veganMeal = _food(id: 2, tags: const ['vegan'], mealType: const ['lunch']);
+    final veganMeal = _food(
+      id: 2,
+      tags: const ['vegan'],
+      mealType: const ['lunch'],
+    );
     final container = ProviderContainer(
       overrides: [
         foodRepositoryProvider.overrideWithValue(
@@ -48,23 +52,36 @@ void main() {
     final controller = container.read(homeControllerProvider.notifier);
 
     expect(container.read(homeControllerProvider).hasValue, isTrue);
-    expect(container.read(homeControllerProvider).value!.foods, [snacks, veganMeal]);
+    expect(container.read(homeControllerProvider).value!.foods, [
+      snacks,
+      veganMeal,
+    ]);
     controller.toggleCategory('Snacks');
 
-    expect(container.read(homeControllerProvider).requireValue.selectedCategory, 'Snacks');
+    expect(
+      container.read(homeControllerProvider).requireValue.selectedCategory,
+      'Snacks',
+    );
 
     final initialState = container.read(homeControllerProvider).requireValue;
     expect(controller.filterFoods(initialState), [snacks]);
 
     controller.toggleCategory('Snacks');
-    expect(container.read(homeControllerProvider).requireValue.selectedCategory, isNull);
+    expect(
+      container.read(homeControllerProvider).requireValue.selectedCategory,
+      isNull,
+    );
 
     final updatedState = container.read(homeControllerProvider).requireValue;
     expect(controller.filterFoods(updatedState), [snacks, veganMeal]);
   });
 }
 
-Food _food({required int id, List<String> tags = const [], List<String> mealType = const []}) {
+Food _food({
+  required int id,
+  List<String> tags = const [],
+  List<String> mealType = const [],
+}) {
   return Food(
     id: id,
     name: 'Food $id',

@@ -43,7 +43,12 @@ void main() {
       tags: const [],
       mealType: const ['Lunch'],
     );
-    final otherMeal = _food(id: 4, name: 'A bowl', tags: const [], mealType: const ['Lunch']);
+    final otherMeal = _food(
+      id: 4,
+      name: 'A bowl',
+      tags: const [],
+      mealType: const ['Lunch'],
+    );
     final container = ProviderContainer(
       overrides: [
         foodRepositoryProvider.overrideWithValue(
@@ -67,25 +72,41 @@ void main() {
 
     expect(controller.filterAndSortFoods(updatedState), [otherMeal, meal]);
 
-    expect(container.read(menuControllerProvider).requireValue.selectedCategory, 'Meal');
-    expect(container.read(menuControllerProvider).requireValue.sort, MenuSort.name);
+    expect(
+      container.read(menuControllerProvider).requireValue.selectedCategory,
+      'Meal',
+    );
+    expect(
+      container.read(menuControllerProvider).requireValue.sort,
+      MenuSort.name,
+    );
   });
 
   test('favorite toggles update the state set', () async {
     final container = ProviderContainer(
-      overrides: [foodRepositoryProvider.overrideWithValue(FakeFoodRepository(() async => []))],
+      overrides: [
+        foodRepositoryProvider.overrideWithValue(
+          FakeFoodRepository(() async => []),
+        ),
+      ],
     );
     addTearDown(container.dispose);
 
     await container.read(menuControllerProvider.future);
     final controller = container.read(menuControllerProvider.notifier);
     controller.toggleFavorite(42);
-    final favoriteIds = container.read(menuControllerProvider).requireValue.favoriteIds;
+    final favoriteIds = container
+        .read(menuControllerProvider)
+        .requireValue
+        .favoriteIds;
     expect(favoriteIds, contains(42));
     expect(() => favoriteIds.add(10), throwsUnsupportedError);
 
     controller.toggleFavorite(42);
-    expect(container.read(menuControllerProvider).requireValue.favoriteIds, isEmpty);
+    expect(
+      container.read(menuControllerProvider).requireValue.favoriteIds,
+      isEmpty,
+    );
   });
 }
 
