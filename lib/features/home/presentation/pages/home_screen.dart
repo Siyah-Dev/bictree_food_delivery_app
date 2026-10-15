@@ -1,4 +1,3 @@
-
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -53,11 +52,7 @@ class HomeScreen extends ConsumerWidget {
       backgroundColor: AppColors.background,
       body: Stack(
         children: [
-          const Positioned.fill(
-            child: ColoredBox(
-              color: AppColors.headerYellow,
-            ),
-          ),
+          const Positioned.fill(child: ColoredBox(color: AppColors.headerYellow)),
 
           Positioned(
             top: topInset + 120,
@@ -67,20 +62,27 @@ class HomeScreen extends ConsumerWidget {
             child: Container(
               decoration: const BoxDecoration(
                 color: AppColors.background,
-                borderRadius: BorderRadius.vertical(
-                  top: Radius.circular(60),
-                ),
+                borderRadius: BorderRadius.vertical(top: Radius.circular(60)),
               ),
               child: RefreshIndicator(
                 color: AppColors.primary,
-                onRefresh: homeController.refreshFoods,
+                onRefresh: () async {
+                  try {
+                    await homeController.refreshFoods();
+                  } catch (_) {
+                    if (!context.mounted) return;
+
+                    AppSnackBar.show(
+                      context,
+                      message: 'Unable to refresh foods. Please try again.',
+                    );
+                  }
+                },
                 child: homeAsync.when(
                   loading: () => const HomeLoading(),
-                  error: (error, stackTrace) => HomeError(
-                    onRetry: homeController.refreshFoods,
-                  ),
+                  error: (error, stackTrace) => HomeError(onRetry: homeController.refreshFoods),
                   data: (homeState) {
-                    final visibleFoods = homeController.filterFoods();
+                    final visibleFoods = homeController.filterFoods(homeState);
                     final bestSellers = homeController.bestSellers(visibleFoods);
                     final recommended = homeController.recommended(visibleFoods);
 
@@ -94,11 +96,7 @@ class HomeScreen extends ConsumerWidget {
                           style: FoodCategoryStyle.home,
                         ),
                         const SizedBox(height: 4),
-                        const Divider(
-                          height: 1,
-                          thickness: 1,
-                          color: AppColors.dividerColor,
-                        ),
+                        const Divider(height: 1, thickness: 1, color: AppColors.dividerColor),
                         const SizedBox(height: 12),
                         SectionHeading(
                           title: 'Best Seller',
@@ -114,8 +112,7 @@ class HomeScreen extends ConsumerWidget {
                             child: ListView.separated(
                               scrollDirection: Axis.horizontal,
                               itemCount: bestSellers.length,
-                              separatorBuilder: (_, _) =>
-                                  const SizedBox(width: 11),
+                              separatorBuilder: (_, _) => const SizedBox(width: 11),
                               itemBuilder: (context, index) {
                                 final food = bestSellers[index];
 
@@ -123,7 +120,8 @@ class HomeScreen extends ConsumerWidget {
                                   width: 73,
                                   child: FoodCard(
                                     food: food,
-                                    onTap: () => _showMessage(context,
+                                    onTap: () => _showMessage(
+                                      context,
                                       '${food.name} details will be implemented next.',
                                     ),
                                   ),
@@ -134,11 +132,7 @@ class HomeScreen extends ConsumerWidget {
                         const SizedBox(height: 18),
                         const PromoBanner(),
                         const SizedBox(height: 18),
-                        const SectionHeading(
-                          title: 'Recommend',
-                          action: null,
-                          onActionTap: null,
-                        ),
+                        const SectionHeading(title: 'Recommend', action: null, onActionTap: null),
                         const SizedBox(height: 12),
                         if (recommended.isEmpty)
                           const EmptyCategory()
@@ -147,8 +141,7 @@ class HomeScreen extends ConsumerWidget {
                             shrinkWrap: true,
                             physics: const NeverScrollableScrollPhysics(),
                             itemCount: recommended.length,
-                            gridDelegate:
-                                const SliverGridDelegateWithFixedCrossAxisCount(
+                            gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
                               crossAxisCount: 2,
                               crossAxisSpacing: 8,
                               mainAxisSpacing: 10,
@@ -160,7 +153,8 @@ class HomeScreen extends ConsumerWidget {
                               return FoodCard(
                                 food: food,
                                 isRecommended: true,
-                                onTap: () => _showMessage(context,
+                                onTap: () => _showMessage(
+                                  context,
                                   '${food.name} details will be implemented next.',
                                 ),
                               );
@@ -182,12 +176,9 @@ class HomeScreen extends ConsumerWidget {
               onSearchTap: () => context.push(RouteNames.searchFilter),
               onFilterTap: () => context.push(RouteNames.searchFilter),
               onCartTap: () => _showMessage(context, 'Cart screen is coming next.'),
-              onNotificationTap: () => _showMessage(context,
-                'Notifications are outside this task.',
-              ),
-              onProfileTap: () => _showMessage(context,
-                'Profile is outside this task.',
-              ),
+              onNotificationTap: () =>
+                  _showMessage(context, 'Notifications are outside this task.'),
+              onProfileTap: () => _showMessage(context, 'Profile is outside this task.'),
             ),
           ),
         ],

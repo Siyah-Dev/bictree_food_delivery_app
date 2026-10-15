@@ -56,11 +56,16 @@ void main() {
     await container.read(menuControllerProvider.future);
     final controller = container.read(menuControllerProvider.notifier);
 
-    expect(controller.filterAndSortFoods(), [earlier, later]);
+    final initialState = container.read(menuControllerProvider).requireValue;
+
+    expect(controller.filterAndSortFoods(initialState), [earlier, later]);
 
     controller.selectCategory('Meal');
     controller.selectSort(MenuSort.name);
-    expect(controller.filterAndSortFoods(), [otherMeal, meal]);
+
+    final updatedState = container.read(menuControllerProvider).requireValue;
+
+    expect(controller.filterAndSortFoods(updatedState), [otherMeal, meal]);
 
     expect(container.read(menuControllerProvider).requireValue.selectedCategory, 'Meal');
     expect(container.read(menuControllerProvider).requireValue.sort, MenuSort.name);
