@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:food_delivery_app/features/cart/presentation/widgets/cart_drawer.dart';
 import 'package:food_delivery_app/features/menu/presentation/controller/menu_state.dart';
 import 'package:food_delivery_app/features/menu/presentation/widgets/menu_error.dart';
 import 'package:go_router/go_router.dart';
@@ -161,7 +162,13 @@ class MenuScreen extends ConsumerWidget {
                 context.push(RouteNames.searchFilter);
               },
               onCartTap: () {
-                _showMessage(context, 'Cart is coming next.');
+                CartDrawer.show(
+                  context,
+                  onCheckout: () {
+                    AppSnackBar.show(context, message: 'Confirm Order screen is the next feature.');
+                  },
+                  onBrowseMenu: () => context.go(RouteNames.menu),
+                );
               },
               onNotificationTap: () {
                 _showMessage(context, 'Notifications are outside this task.');

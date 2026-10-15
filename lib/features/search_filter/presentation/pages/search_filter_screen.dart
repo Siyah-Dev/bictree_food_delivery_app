@@ -1,6 +1,6 @@
-
 import 'package:flutter/material.dart';
 import 'package:food_delivery_app/core/widgets/app_primary_button.dart';
+import 'package:food_delivery_app/features/cart/presentation/widgets/cart_drawer.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../../app/route_names.dart';
@@ -32,17 +32,13 @@ class _SearchFilterScreenState extends State<SearchFilterScreen> {
   @override
   void initState() {
     super.initState();
-    _selectedTags = SearchFilterOptions.initialSelectionFor(
-      _selectedCategory,
-    ).toSet();
+    _selectedTags = SearchFilterOptions.initialSelectionFor(_selectedCategory).toSet();
   }
 
   void _onCategorySelected(String category) {
     setState(() {
       _selectedCategory = category;
-      _selectedTags = SearchFilterOptions.initialSelectionFor(
-        category,
-      ).toSet();
+      _selectedTags = SearchFilterOptions.initialSelectionFor(category).toSet();
     });
   }
 
@@ -74,31 +70,20 @@ class _SearchFilterScreenState extends State<SearchFilterScreen> {
         context.go(RouteNames.menu);
         break;
       case 2:
-        AppSnackBar.show(
-          context,
-          message: 'Favorites are coming soon.',
-        );
+        AppSnackBar.show(context, message: 'Favorites are coming soon.');
         break;
       case 3:
-        AppSnackBar.show(
-          context,
-          message: 'Orders are coming soon.',
-        );
+        AppSnackBar.show(context, message: 'Orders are coming soon.');
         break;
       case 4:
-        AppSnackBar.show(
-          context,
-          message: 'Support is outside this task.',
-        );
+        AppSnackBar.show(context, message: 'Support is outside this task.');
         break;
     }
   }
 
   @override
   Widget build(BuildContext context) {
-    final categoryOptions = SearchFilterOptions.chipsFor(
-      _selectedCategory,
-    );
+    final categoryOptions = SearchFilterOptions.chipsFor(_selectedCategory);
 
     return Scaffold(
       backgroundColor: AppColors.white,
@@ -107,16 +92,16 @@ class _SearchFilterScreenState extends State<SearchFilterScreen> {
           FilterScreenHeader(
             onBack: () => context.pop(),
             onCartTap: () {
-              AppSnackBar.show(
+              CartDrawer.show(
                 context,
-                message: 'Cart is coming next.',
+                onCheckout: () {
+                  AppSnackBar.show(context, message: 'Confirm Order screen is the next feature.');
+                },
+                onBrowseMenu: () => context.go(RouteNames.menu),
               );
             },
             onProfileTap: () {
-              AppSnackBar.show(
-                context,
-                message: 'Profile is outside this task.',
-              );
+              AppSnackBar.show(context, message: 'Profile is outside this task.');
             },
           ),
           Expanded(
@@ -182,12 +167,11 @@ class _SearchFilterScreenState extends State<SearchFilterScreen> {
                     const SizedBox(height: 35),
                     Center(
                       child: AppPrimaryButton(
-                          label: 'Apply',
-                          isLoading: false,
-                          onPressed: _applyFilters,
-                        ),
+                        label: 'Apply',
+                        isLoading: false,
+                        onPressed: _applyFilters,
+                      ),
                     ),
-                    
                   ],
                 ),
               ),
@@ -228,13 +212,7 @@ class _SmallSectionLabel extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Text(
-      label,
-      style: const TextStyle(
-        color: AppColors.textSecondary,
-        fontSize: 12,
-      ),
-    );
+    return Text(label, style: const TextStyle(color: AppColors.textSecondary, fontSize: 12));
   }
 }
 
@@ -243,10 +221,6 @@ class _SectionDivider extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const Divider(
-      height: 1,
-      thickness: 0.7,
-      color: AppColors.dividerColor,
-    );
+    return const Divider(height: 1, thickness: 0.7, color: AppColors.dividerColor);
   }
 }
