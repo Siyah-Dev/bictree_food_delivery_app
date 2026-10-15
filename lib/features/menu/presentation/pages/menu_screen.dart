@@ -164,9 +164,7 @@ class MenuScreen extends ConsumerWidget {
               onCartTap: () {
                 CartDrawer.show(
                   context,
-                  onCheckout: () {
-                    AppSnackBar.show(context, message: 'Confirm Order screen is the next feature.');
-                  },
+                  onCheckout: () => context.push(RouteNames.confirmOrder),
                   onBrowseMenu: () => context.go(RouteNames.menu),
                 );
               },
