@@ -1,12 +1,8 @@
 
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:food_delivery_app/features/menu/presentation/controller/menu_state.dart';
 
-import '../../../food/domain/entities/food.dart';
-import '../../../food/presentation/providers/food_providers.dart';
+import '../controller/menu_controller.dart';
 
-final menuFoodsProvider = FutureProvider.autoDispose<List<Food>>((ref) {
-  return ref.watch(foodRepositoryProvider).getFoods(
-        limit: 50,
-        skip: 0,
-      );
-});
+final menuControllerProvider =
+    AsyncNotifierProvider<MenuController, MenuState>(MenuController.new);

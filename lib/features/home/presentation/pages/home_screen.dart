@@ -7,8 +7,7 @@ import '../../../../app/route_names.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/utils/app_snackbar.dart';
 import '../../../../shared/presentation/widgets/food_category_selector.dart';
-import '../../../food/domain/entities/food.dart';
-import '../../../food/presentation/providers/food_providers.dart';
+import '../providers/home_providers.dart';
 import '../widgets/empty_category.dart';
 import '../widgets/food_card.dart';
 import '../widgets/home_bottom_navigation.dart';
@@ -18,84 +17,14 @@ import '../widgets/home_loading.dart';
 import '../widgets/promo_banner.dart';
 import '../widgets/section_heading.dart';
 
-class HomeScreen extends ConsumerStatefulWidget {
+class HomeScreen extends ConsumerWidget {
   const HomeScreen({super.key});
 
-  @override
-  ConsumerState<HomeScreen> createState() => _HomeScreenState();
-}
-
-class _HomeScreenState extends ConsumerState<HomeScreen> {
-  String? _selectedCategory;
-
-  List<Food> _filterFoods(List<Food> foods) {
-    final category = _selectedCategory?.toLowerCase();
-
-    if (category == null) return foods;
-
-    return foods.where((food) {
-      final tags = food.tags.map((tag) => tag.toLowerCase()).toList();
-      final mealTypes =
-          food.mealType.map((meal) => meal.toLowerCase()).toList();
-
-      switch (category) {
-        case 'snacks':
-          return tags.any(
-            (tag) => tag.contains('snack') || tag.contains('appetizer'),
-          );
-
-        case 'meal':
-          return mealTypes.any(
-            (meal) => ['breakfast', 'lunch', 'dinner'].contains(meal),
-          );
-
-        case 'vegan':
-          return tags.any(
-            (tag) => tag.contains('vegan') || tag.contains('plant-based'),
-          );
-
-        case 'dessert':
-          return mealTypes.any((meal) => meal.contains('dessert')) ||
-              tags.any(
-                (tag) => tag.contains('dessert') || tag.contains('sweet'),
-              );
-
-        case 'drinks':
-          return mealTypes.any(
-                (meal) => meal.contains('drink') || meal.contains('beverage'),
-              ) ||
-              tags.any(
-                (tag) => tag.contains('drink') || tag.contains('beverage'),
-              );
-
-        default:
-          return true;
-      }
-    }).toList();
-  }
-
-  List<Food> _bestSellers(List<Food> foods) {
-    final sorted = [...foods]
-      ..sort((a, b) => b.rating.compareTo(a.rating));
-
-    return sorted.take(4).toList();
-  }
-
-  List<Food> _recommended(List<Food> foods) {
-    return foods.take(10).toList();
-  }
-
-  void _onCategoryTap(String category) {
-    setState(() {
-      _selectedCategory = _selectedCategory == category ? null : category;
-    });
-  }
-
-  void _showMessage(String message) {
+  void _showMessage(BuildContext context, String message) {
     AppSnackBar.show(context, message: message);
   }
 
-  void _onNavigationTap(int index) {
+  void _onNavigationTap(BuildContext context, int index) {
     switch (index) {
       case 0:
         return;
@@ -103,20 +32,21 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
         context.go(RouteNames.menu);
         return;
       case 2:
-        _showMessage('Favorites will be available soon.');
+        _showMessage(context, 'Favorites will be available soon.');
         return;
       case 3:
-        _showMessage('Orders screen is coming soon.');
+        _showMessage(context, 'Orders screen is coming soon.');
         return;
       case 4:
-        _showMessage('Support will be available soon.');
+        _showMessage(context, 'Support will be available soon.');
         return;
     }
   }
 
   @override
-  Widget build(BuildContext context) {
-    final foodsAsync = ref.watch(foodsProvider);
+  Widget build(BuildContext context, WidgetRef ref) {
+    final homeAsync = ref.watch(homeControllerProvider);
+    final homeController = ref.read(homeControllerProvider.notifier);
     final topInset = MediaQuery.paddingOf(context).top;
 
     return Scaffold(
@@ -143,24 +73,24 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
               ),
               child: RefreshIndicator(
                 color: AppColors.primary,
-                onRefresh: () => ref.refresh(foodsProvider.future),
-                child: foodsAsync.when(
+                onRefresh: homeController.refreshFoods,
+                child: homeAsync.when(
                   loading: () => const HomeLoading(),
                   error: (error, stackTrace) => HomeError(
-                    onRetry: () => ref.invalidate(foodsProvider),
+                    onRetry: homeController.refreshFoods,
                   ),
-                  data: (foods) {
-                    final visibleFoods = _filterFoods(foods);
-                    final bestSellers = _bestSellers(visibleFoods);
-                    final recommended = _recommended(visibleFoods);
+                  data: (homeState) {
+                    final visibleFoods = homeController.filterFoods();
+                    final bestSellers = homeController.bestSellers(visibleFoods);
+                    final recommended = homeController.recommended(visibleFoods);
 
                     return ListView(
                       physics: const AlwaysScrollableScrollPhysics(),
                       padding: const EdgeInsets.fromLTRB(35, 30, 34, 18),
                       children: [
                         FoodCategorySelector(
-                          selectedCategory: _selectedCategory,
-                          onCategorySelected: _onCategoryTap,
+                          selectedCategory: homeState.selectedCategory,
+                          onCategorySelected: homeController.toggleCategory,
                           style: FoodCategoryStyle.home,
                         ),
                         const SizedBox(height: 4),
@@ -193,7 +123,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                                   width: 73,
                                   child: FoodCard(
                                     food: food,
-                                    onTap: () => _showMessage(
+                                    onTap: () => _showMessage(context,
                                       '${food.name} details will be implemented next.',
                                     ),
                                   ),
@@ -230,7 +160,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                               return FoodCard(
                                 food: food,
                                 isRecommended: true,
-                                onTap: () => _showMessage(
+                                onTap: () => _showMessage(context,
                                   '${food.name} details will be implemented next.',
                                 ),
                               );
@@ -251,11 +181,11 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
             child: HomeHeader(
               onSearchTap: () => context.push(RouteNames.searchFilter),
               onFilterTap: () => context.push(RouteNames.searchFilter),
-              onCartTap: () => _showMessage('Cart screen is coming next.'),
-              onNotificationTap: () => _showMessage(
+              onCartTap: () => _showMessage(context, 'Cart screen is coming next.'),
+              onNotificationTap: () => _showMessage(context,
                 'Notifications are outside this task.',
               ),
-              onProfileTap: () => _showMessage(
+              onProfileTap: () => _showMessage(context,
                 'Profile is outside this task.',
               ),
             ),
@@ -264,7 +194,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
       ),
       bottomNavigationBar: HomeBottomNavigation(
         selectedIndex: 0,
-        onItemSelected: _onNavigationTap,
+        onItemSelected: (index) => _onNavigationTap(context, index),
       ),
     );
   }

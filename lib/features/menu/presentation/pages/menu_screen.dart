@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:food_delivery_app/features/menu/presentation/controller/menu_state.dart';
 import 'package:food_delivery_app/features/menu/presentation/widgets/menu_error.dart';
 import 'package:go_router/go_router.dart';
 
@@ -8,95 +9,25 @@ import '../../../../core/theme/app_colors.dart';
 import '../../../../core/utils/app_snackbar.dart';
 import '../../../food/domain/entities/food.dart';
 import '../../../home/presentation/widgets/home_bottom_navigation.dart';
+import '../controller/menu_controller.dart' as menu_controller;
 import '../providers/menu_providers.dart';
 import '../widgets/menu_food_card.dart';
 import '../widgets/menu_header.dart';
 import '../widgets/menu_sort_row.dart';
 
-class MenuScreen extends ConsumerStatefulWidget {
+class MenuScreen extends ConsumerWidget {
   const MenuScreen({super.key});
-
-  @override
-  ConsumerState<MenuScreen> createState() => _MenuScreenState();
-}
-
-enum _MenuSort {
-  popular('Popular'),
-  rating('Rating'),
-  name('Name'),
-  cookingTime('Cooking Time');
-
-  const _MenuSort(this.label);
-
-  final String label;
-}
-
-class _MenuScreenState extends ConsumerState<MenuScreen> {
-  String _selectedCategory = 'Snacks';
-  _MenuSort _sort = _MenuSort.popular;
-
-  final Set<int> _favoriteIds = {};
 
   static const double _headerSpacingBeforeCategories = 83;
   static const double _bodyOverlap = 55;
   static const double _contentTopSpacing = 55;
 
-  List<Food> _filterFoods(List<Food> foods) {
-    final category = _selectedCategory.toLowerCase();
-
-    return foods.where((food) {
-      final tags = food.tags.map((tag) => tag.toLowerCase()).toList();
-
-      final mealTypes = food.mealType.map((meal) => meal.toLowerCase()).toList();
-
-      switch (category) {
-        case 'snacks':
-          return tags.any(
-            (tag) => tag.contains('snack') || tag.contains('appetizer') || tag.contains('starter'),
-          );
-
-        case 'meal':
-          return mealTypes.any((meal) => ['breakfast', 'lunch', 'dinner'].contains(meal));
-
-        case 'vegan':
-          return tags.any((tag) => tag.contains('vegan') || tag.contains('plant-based'));
-
-        case 'dessert':
-          return mealTypes.any((meal) => meal.contains('dessert')) ||
-              tags.any((tag) => tag.contains('dessert') || tag.contains('sweet'));
-
-        case 'drinks':
-          return mealTypes.any((meal) => meal.contains('drink') || meal.contains('beverage')) ||
-              tags.any((tag) => tag.contains('drink') || tag.contains('beverage'));
-
-        default:
-          return true;
-      }
-    }).toList();
-  }
-
-  List<Food> _sortFoods(List<Food> foods) {
-    final result = [...foods];
-
-    switch (_sort) {
-      case _MenuSort.popular:
-        result.sort((a, b) => b.reviewCount.compareTo(a.reviewCount));
-
-      case _MenuSort.rating:
-        result.sort((a, b) => b.rating.compareTo(a.rating));
-
-      case _MenuSort.name:
-        result.sort((a, b) => a.name.compareTo(b.name));
-
-      case _MenuSort.cookingTime:
-        result.sort((a, b) => a.totalTimeMinutes.compareTo(b.totalTimeMinutes));
-    }
-
-    return result;
-  }
-
-  Future<void> _showSortOptions() async {
-    final selected = await showModalBottomSheet<_MenuSort>(
+  Future<void> _showSortOptions(
+    BuildContext context,
+    MenuState menuState,
+    menu_controller.MenuController menuController,
+  ) async {
+    final selected = await showModalBottomSheet<MenuSort>(
       context: context,
       backgroundColor: AppColors.background,
       shape: const RoundedRectangleBorder(
@@ -130,8 +61,8 @@ class _MenuScreenState extends ConsumerState<MenuScreen> {
                   ),
                 ),
                 const SizedBox(height: 12),
-                RadioGroup<_MenuSort>(
-                  groupValue: _sort,
+                RadioGroup<MenuSort>(
+                  groupValue: menuState.sort,
                   onChanged: (value) {
                     if (value != null) {
                       Navigator.pop(context, value);
@@ -139,8 +70,8 @@ class _MenuScreenState extends ConsumerState<MenuScreen> {
                   },
                   child: Column(
                     mainAxisSize: MainAxisSize.min,
-                    children: _MenuSort.values.map((option) { 
-                      return RadioListTile<_MenuSort>(
+                    children: MenuSort.values.map((option) {
+                      return RadioListTile<MenuSort>(
                         value: option,
                         activeColor: AppColors.primary,
                         title: Text(option.label),
@@ -155,16 +86,16 @@ class _MenuScreenState extends ConsumerState<MenuScreen> {
       },
     );
 
-    if (selected != null && mounted) {
-      setState(() => _sort = selected);
+    if (selected != null && context.mounted) {
+      menuController.selectSort(selected);
     }
   }
 
-  void _showMessage(String message) {
+  void _showMessage(BuildContext context, String message) {
     AppSnackBar.show(context, message: message);
   }
 
-  void _onNavigationTap(int index) {
+  void _onNavigationTap(BuildContext context, int index) {
     if (index == 1) return;
 
     if (index == 0) {
@@ -180,16 +111,13 @@ class _MenuScreenState extends ConsumerState<MenuScreen> {
       'Support is outside this task.',
     ];
 
-    _showMessage(messages[index]);
-  }
-
-  void _onCategorySelected(String category) {
-    setState(() => _selectedCategory = category);
+    _showMessage(context, messages[index]);
   }
 
   @override
-  Widget build(BuildContext context) {
-    final foodsAsync = ref.watch(menuFoodsProvider);
+  Widget build(BuildContext context, WidgetRef ref) {
+    final menuAsync = ref.watch(menuControllerProvider);
+    final menuController = ref.read(menuControllerProvider.notifier);
     final topPadding = MediaQuery.paddingOf(context).top;
 
     final bodyTop = topPadding + _headerSpacingBeforeCategories + _bodyOverlap;
@@ -212,7 +140,11 @@ class _MenuScreenState extends ConsumerState<MenuScreen> {
               ),
               child: Padding(
                 padding: const EdgeInsets.only(top: _contentTopSpacing),
-                child: _buildFoodContent(foodsAsync),
+                child: _buildFoodContent(
+                  context,
+                  menuAsync,
+                  menuController,
+                ),
               ),
             ),
           ),
@@ -222,49 +154,63 @@ class _MenuScreenState extends ConsumerState<MenuScreen> {
             left: 0,
             right: 0,
             child: MenuHeader(
-              selectedCategory: _selectedCategory,
-              onCategorySelected: _onCategorySelected,
+              selectedCategory:
+                  menuAsync.hasValue
+                      ? menuAsync.requireValue.selectedCategory
+                      : 'Snacks',
+              onCategorySelected: menuAsync.hasValue
+                  ? menuController.selectCategory
+                  : (_) {},
               onSearchTap: () {
-                _showMessage('Search is coming next.');
+                _showMessage(context, 'Search is coming next.');
               },
               onFilterTap: () {
                 context.push(RouteNames.searchFilter);
               },
               onCartTap: () {
-                _showMessage('Cart is coming next.');
+                _showMessage(context, 'Cart is coming next.');
               },
               onNotificationTap: () {
-                _showMessage('Notifications are outside this task.');
+                _showMessage(context, 'Notifications are outside this task.');
               },
               onProfileTap: () {
-                _showMessage('Profile is outside this task.');
+                _showMessage(context, 'Profile is outside this task.');
               },
             ),
           ),
         ],
       ),
-      bottomNavigationBar: HomeBottomNavigation(selectedIndex: 1, onItemSelected: _onNavigationTap),
+      bottomNavigationBar: HomeBottomNavigation(
+        selectedIndex: 1,
+        onItemSelected: (index) => _onNavigationTap(context, index),
+      ),
     );
   }
 
-  Widget _buildFoodContent(AsyncValue<List<Food>> foodsAsync) {
-    return foodsAsync.when(
+  Widget _buildFoodContent(
+    BuildContext context,
+    AsyncValue<MenuState> menuAsync,
+    menu_controller.MenuController menuController,
+  ) {
+    return menuAsync.when(
       loading: () => const Center(child: CircularProgressIndicator(color: AppColors.primary)),
-      error: (error, stackTrace) => MenuError(onRetry: () => ref.invalidate(menuFoodsProvider)),
-      data: (foods) {
-        final filteredFoods = _sortFoods(_filterFoods(foods));
+      error: (error, stackTrace) => MenuError(onRetry: menuController.refreshFoods),
+      data: (menuState) {
+        final filteredFoods = menuController.filterAndSortFoods();
 
         return RefreshIndicator(
           color: AppColors.primary,
-          onRefresh: () => ref.refresh(menuFoodsProvider.future),
+          onRefresh: menuController.refreshFoods,
           child: ListView(
             physics: const AlwaysScrollableScrollPhysics(),
             padding: const EdgeInsets.fromLTRB(34, 20, 34, 24),
             children: [
               MenuSortRow(
-                sortLabel: _sort.label,
-                onSortTap: _showSortOptions,
-                onFilterTap: _showSortOptions,
+                sortLabel: menuState.sort.label,
+                onSortTap: () =>
+                    _showSortOptions(context, menuState, menuController),
+                onFilterTap: () =>
+                    _showSortOptions(context, menuState, menuController),
               ),
               const SizedBox(height: 20),
               if (filteredFoods.isEmpty)
@@ -279,7 +225,11 @@ class _MenuScreenState extends ConsumerState<MenuScreen> {
                   ),
                 )
               else
-                ..._buildFoodList(filteredFoods),
+                ..._buildFoodList(
+                  context,
+                  menuController,
+                  filteredFoods,
+                ),
             ],
           ),
         );
@@ -287,7 +237,11 @@ class _MenuScreenState extends ConsumerState<MenuScreen> {
     );
   }
 
-  List<Widget> _buildFoodList(List<Food> foods) {
+  List<Widget> _buildFoodList(
+    BuildContext context,
+    menu_controller.MenuController menuController,
+    List<Food> foods,
+  ) {
     final widgets = <Widget>[];
 
     for (var index = 0; index < foods.length; index++) {
@@ -297,15 +251,9 @@ class _MenuScreenState extends ConsumerState<MenuScreen> {
         MenuFoodCard(
           food: food,
           onTap: () {
-            _showMessage('${food.name} details are coming next.');
+            _showMessage(context, '${food.name} details are coming next.');
           },
-          onFavoriteTap: () {
-            setState(() {
-              if (!_favoriteIds.add(food.id)) {
-                _favoriteIds.remove(food.id);
-              }
-            });
-          },
+          onFavoriteTap: () => menuController.toggleFavorite(food.id),
         ),
       );
 

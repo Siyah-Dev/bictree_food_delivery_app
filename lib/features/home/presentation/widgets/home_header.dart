@@ -26,7 +26,12 @@ class HomeHeader extends StatelessWidget {
 
     return Container(
       color: AppColors.headerYellow,
-      padding: EdgeInsets.fromLTRB(34, topInset + 22, 34, 20),
+      padding: EdgeInsets.fromLTRB(
+        34,
+        topInset + 22,
+        34,
+        20,
+      ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         mainAxisSize: MainAxisSize.min,
